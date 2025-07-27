@@ -1,0 +1,1 @@
+This is a placeholder. The .git folder will be created when you run 'git init'.
