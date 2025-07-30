@@ -741,8 +741,8 @@ if 'max_suggestions' not in st.session_state:
 
 @st.cache_resource
 def load_model():
-    model = joblib.load('https://symptomstorage.blob.core.windows.net/gold/model.pkl')
-    le = joblib.load('https://symptomstorage.blob.core.windows.net/gold/label_encoder.pkl')
+    model = joblib.load('https://symptomstorage.blob.core.windows.net/gold/final_symptom_checker_model_all_features.pkl')
+    le = joblib.load('https://symptomstorage.blob.core.windows.net/gold/label_encoder_all_features.pkl')
     with open('features/rf_features.txt') as f:
         features = [line.strip() for line in f if line.strip()]
     try:
