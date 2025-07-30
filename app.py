@@ -739,18 +739,31 @@ if 'max_suggestions' not in st.session_state:
 if 'max_suggestions' not in st.session_state:
     st.session_state.max_suggestions = 4
 
+import urllib.request
+import io
+
 @st.cache_resource
 def load_model():
-    model = joblib.load('https://symptomstorage.blob.core.windows.net/symptomdata/gold/final_symptom_checker_model_all_features.pkl?sp=r&st=2025-07-30T15:35:59Z&se=2025-09-03T23:50:59Z&spr=https&sv=2024-11-04&sr=b&sig=oAD0xYsn%2F6lgDVHeb8%2BoNe9jEgRbxb%2Bmapv3E5LR22Y%3D')
-    le = joblib.load('https://symptomstorage.blob.core.windows.net/symptomdata/gold/label_encoder_all_features.pkl?sp=r&st=2025-07-30T15:44:07Z&se=2025-09-03T23:59:07Z&spr=https&sv=2024-11-04&sr=b&sig=aRmW62A%2FTItiylR8hWiLQMCb12S0pzQTFQPkGskJA0I%3D')
+    model_url = "https://symptomstorage.blob.core.windows.net/symptomdata/gold/final_symptom_checker_model_all_features.pkl?sp=r&st=2025-07-30T15:35:59Z&se=2025-09-03T23:50:59Z&spr=https&sv=2024-11-04&sr=b&sig=oAD0xYsn%2F6lgDVHeb8%2BoNe9jEgRbxb%2Bmapv3E5LR22Y%3D"
+    le_url = "https://symptomstorage.blob.core.windows.net/symptomdata/gold/label_encoder_all_features.pkl?sp=r&st=2025-07-30T15:44:07Z&se=2025-09-03T23:59:07Z&spr=https&sv=2024-11-04&sr=b&sig=aRmW62A%2FTItiylR8hWiLQMCb12S0pzQTFQPkGskJA0I%3D"
+
+    with urllib.request.urlopen(model_url) as response:
+        model = joblib.load(io.BytesIO(response.read()))
+
+    with urllib.request.urlopen(le_url) as response:
+        le = joblib.load(io.BytesIO(response.read()))
+
     with open('features/rf_features.txt') as f:
         features = [line.strip() for line in f if line.strip()]
+
     try:
         kb = pd.read_csv('data/disease_centric_knowledgebase_with_doctor.csv')
         disease_info = {k.strip().lower(): v for k, v in kb.groupby('disease').agg({'precaution': 'first', 'doctor_type': 'first'}).to_dict('index').items()}
     except Exception:
         disease_info = {}
+
     return model, le, features, disease_info
+
 
 
 
