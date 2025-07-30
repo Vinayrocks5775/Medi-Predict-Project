@@ -1,5 +1,5 @@
 #!/bin/bash
-python3.10 -m venv antenv
+python3.11 -m venv antenv
 source antenv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
